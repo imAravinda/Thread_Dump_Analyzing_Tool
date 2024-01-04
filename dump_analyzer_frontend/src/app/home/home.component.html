@@ -1,0 +1,19 @@
+<div class="Home">
+    <div class="card">
+      <div class="header">Upload Thread Dump</div>
+      <div class="upload-section">
+        <div class="icon-section">
+          <label class="upload-icon">
+            <fa-icon [icon]="icon"></fa-icon>
+            <input type="file" id="file" (change)="onFileSelected($event)"/>
+          </label>
+          <p>
+            {{lableText}}
+          </p>
+        </div>
+        <div class="button-section">
+          <button class="btn" (click)="uploadAndAnalyze()">Analyze</button>
+        </div>
+      </div>
+    </div>
+  </div>
