@@ -1,1 +1,6 @@
-This is a web based tool which can use to analyze thread dumps to identify wheather there are deadlock, high CPU consuming threads, Garbage Collectors, and how many threads are in same states and what are they and also this show threads in a same pool.
+This is a web-based tool that can be used to analyze thread dumps this shows the following information
+Whether there are deadlock or not 
+What are high CPU-consuming threads
+Garbage Collectors threads
+how many threads are in the same states and count of them
+threads in the same pool.
