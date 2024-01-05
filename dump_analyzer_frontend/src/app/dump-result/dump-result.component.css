@@ -137,6 +137,12 @@
     align-items: center;
     width: 40%;
 }
+.viewAll-section{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+}
 .chart{
     display: block;
     width: 30rem;

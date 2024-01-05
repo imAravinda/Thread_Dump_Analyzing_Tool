@@ -3,6 +3,21 @@
         <h1>Details of Threads</h1>
         <h2>Threads in {{thread}} State</h2>
     </div>
+    <div class="filter-section">
+      <h2>Search By Package</h2>
+      <form class="filter-form">
+        <input
+            type="tel"
+            placeholder="Search"
+            name="search"
+            class="search-bar"
+            [(ngModel)]="pkgName"
+          />
+          <div class="btn-section">
+            <button class="filter-btn" (click)="searchByPackage()">Search</button>
+          </div>  
+      </form>    
+    </div>
     <div class="details-subsection">
       <mat-card *ngFor="let deadlockDetail of displayedDetails">
         <mat-card-content>

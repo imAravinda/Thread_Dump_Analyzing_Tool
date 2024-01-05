@@ -64,6 +64,13 @@ export class DumpResultComponent implements OnInit {
   cpuConsumingThreads: any;
   garbageCollectionThreads: any;
 
+  getThreradDetails() : void{
+    this.analyzedresult.getAnalysisResult().subscribe((result) => {
+      this.analyzedresult.setAnalysisFilteredResult(result);
+      this.router.navigate(['/threads-details']);
+    });
+  }
+
   isDeadlockOccure(): void {
     this.http.get(`${this.api}detectDeadLock`).subscribe((result) => {
       this.deadLockResult = result;

@@ -17,6 +17,9 @@ import {MatTableModule} from '@angular/material/table';
 import { DetailsViewerComponent } from './details-viewer/details-viewer.component';
 import { DiagramModule, SymbolPaletteModule, OverviewModule } from '@syncfusion/ej2-angular-diagrams';
 import {MatExpansionModule} from '@angular/material/expansion';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
 
 const appRoute : Routes = [
   {path:'', component:HomeComponent},
@@ -44,7 +47,10 @@ const appRoute : Routes = [
     DiagramModule, 
     SymbolPaletteModule, 
     OverviewModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatFormFieldModule,
+    MatIconModule,
+    FormsModule
   ],
   providers: [AnayzeResultCacheService],
   bootstrap: [AppComponent]

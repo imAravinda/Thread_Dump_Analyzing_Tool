@@ -5,6 +5,14 @@
     align-items: center;
     flex-direction: column;
 }
+.filter-section{
+    display: flex;
+    justify-content: left;
+    align-items: flex-start;
+    width: 100%;
+    flex-direction: column;
+    margin: 3% 0;
+}
 .header{
     display: flex;
     justify-content: left;
@@ -22,6 +30,44 @@
     font-size: 1.5rem;
     letter-spacing: 0.15rem;
     font-weight: 100;
+}
+.filter-form{
+    display: flex;
+    justify-content: left;
+    align-items: flex-start;
+    width: 100%;
+    flex-direction: column;
+}
+.search-bar{
+    width: 20rem;
+    height: 1rem;
+    padding: 0.5rem;
+    border-radius: 10rem;
+}
+.btn-section{
+    width: 50%;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    margin: 2% 0;
+}
+.filter-btn{
+    background: #39a7ff;
+  border-radius: 5rem;
+  border: none;
+  font-size: 14px;
+  color: #fff;
+  font-style: none;
+  cursor: pointer;
+  width: 20%;
+  padding: 0 5%;
+  height: 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+  font-weight: 600;
+  text-decoration: none;
 }
 .details-subsection{
     display: flex;

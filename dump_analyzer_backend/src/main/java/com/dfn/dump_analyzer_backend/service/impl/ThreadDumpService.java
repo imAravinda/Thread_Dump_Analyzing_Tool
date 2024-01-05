@@ -57,7 +57,7 @@ public class ThreadDumpService implements ThreadDumpServiceI {
         List<ThreadDump> filteredThreadDumps = new ArrayList<>();
         ThreadDumpAnalyzingResult threadDumpAnalyzingResult = new ThreadDumpAnalyzingResult();
         for (ThreadDump threadDump : threadDumps) {
-            if (threadDump.getPackageName() != null && threadDump.getPackageName().equals(Pkg)) {
+            if (threadDump.getPackageDetailsAffectedByThread() != null && threadDump.getPackageDetailsAffectedByThread().contains(Pkg)) {
                 filteredThreadDumps.add(threadDump);
             }
         }
