@@ -4,7 +4,9 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080/api/thread-dump/'
+  apiUrl: 'http://localhost:8080/api/thread-dump/',
+  localURL:'http://localhost:4200',
+  prodUrl: ' http://localhost:8080'
 };
 
 /*

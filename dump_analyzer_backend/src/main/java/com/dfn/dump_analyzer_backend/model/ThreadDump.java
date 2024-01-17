@@ -1,6 +1,8 @@
 package com.dfn.dump_analyzer_backend.model;
 
 
+import java.util.List;
+
 public class ThreadDump {
 
     private String State;
@@ -10,6 +12,7 @@ public class ThreadDump {
     private boolean isBlocked = false;
     private String lockedResourceId;
     private String waitingResourceId;
+    private String timedWaitingResourceID;
     private String PackageDetailsAffectedByThread;
     private String packageName;
     private String className;
@@ -17,7 +20,7 @@ public class ThreadDump {
     private String StackTrace;
     private boolean isDaemon = false;
     private String pool;
-    private CommonPools commonPools;
+    private CommonCategories commonCategories;
     private double cpuTime;
     private int priority;
     private double elapsedTime;
@@ -135,14 +138,6 @@ public class ThreadDump {
         this.pool = pool;
     }
 
-    public CommonPools getCommonPools() {
-        return commonPools;
-    }
-
-    public void setCommonPools(CommonPools commonPools) {
-        this.commonPools = commonPools;
-    }
-
     public double getCpuTime() {
         return cpuTime;
     }
@@ -175,9 +170,27 @@ public class ThreadDump {
         this.lineNo = lineNo;
     }
 
-    public static class CommonPools{
+    public String getTimedWaitingResourceID() {
+        return timedWaitingResourceID;
+    }
+
+    public void setTimedWaitingResourceID(String timedWaitingResourceID) {
+        this.timedWaitingResourceID = timedWaitingResourceID;
+    }
+
+    public CommonCategories getCommonCategories() {
+        return commonCategories;
+    }
+
+    public void setCommonCategories(CommonCategories commonCategories) {
+        this.commonCategories = commonCategories;
+    }
+
+    public static class CommonCategories{
         private String poolName;
-        private int count;
+        private String stackTrace;
+        private String count;
+        private List<ThreadDump> relatedThreadDumps;
 
         public String getPoolName() {
             return poolName;
@@ -187,12 +200,28 @@ public class ThreadDump {
             this.poolName = poolName;
         }
 
-        public int getCount() {
+        public String getCount() {
             return count;
         }
 
-        public void setCount(int count) {
+        public void setCount(String count) {
             this.count = count;
+        }
+
+        public String getStackTrace() {
+            return stackTrace;
+        }
+
+        public void setStackTrace(String stackTrace) {
+            this.stackTrace = stackTrace;
+        }
+
+        public List<ThreadDump> getRelatedThreadDumps() {
+            return relatedThreadDumps;
+        }
+
+        public void setRelatedThreadDumps(List<ThreadDump> relatedThreadDumps) {
+            this.relatedThreadDumps = relatedThreadDumps;
         }
     }
 }

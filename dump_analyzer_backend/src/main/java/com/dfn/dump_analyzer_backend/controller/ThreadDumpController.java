@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("api/thread-dump")
@@ -37,14 +38,16 @@ public class ThreadDumpController {
     }
 
     @GetMapping("/sameStackTraces")
-    public List<String> getSameStackTraces(){
-        return threadDumpService.getThreadsInSameStackTrace();
+    public List<ThreadDump.CommonCategories> getSameStackTraces(){
+        return threadDumpService.getSameStackTraces();
     }
 
     @GetMapping("/samePoolThreads")
-    public List<ThreadDump.CommonPools> getCommonPoolThreads(){
+    public List<ThreadDump.CommonCategories> getCommonPoolThreads(){
         return threadDumpService.getPoolCategories();
     }
+
+
 
     @PostMapping("/threadsByPool")
     public ThreadDumpAnalyzingResult getThreadsByPool(@RequestBody Map<String, String> requestBody){
@@ -71,5 +74,10 @@ public class ThreadDumpController {
     @GetMapping("/garbageCollecters")
     public ThreadDumpAnalyzingResult getGarbageCollectors(){
         return threadDumpService.getGarbageThreads();
+    }
+
+    @GetMapping("/dumpsWithSameWaitingResourceID")
+    public Map<String, List<ThreadDump>> getThreadDumpsWithSameWaitingResourceID(){
+        return threadDumpService.getThreadsWithSameWitingResource();
     }
 }

@@ -1,0 +1,320 @@
+.container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+.heading{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    font-size: 3rem;
+    text-align: left;
+    width: 90%;
+    font-weight: 400;
+    letter-spacing: 0.5rem;
+    margin: 3%;
+}
+.thread-counts,.daemon-section,.pool-section,.deadlock-section,.garbage-section,.same-stack-trace-section{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 90%;
+    height: 100%;
+    margin: 3%;
+}
+.cpu-consume-section{
+    display: flex;
+    width: 90%;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.pool-section>table{
+    width: 90%;
+    margin-top: 3%;
+}
+.header{
+    display: flex;
+    justify-content: left;
+    align-items: flex-start;
+    flex-direction: column;
+    width: 100%;
+}
+.header>h1{
+    font-size: 2rem;
+    letter-spacing: 0.25rem;
+    font-weight: 400;
+    margin-bottom: 2%;
+}
+.header>h2{
+    font-size: 1.5rem;
+    letter-spacing: 0.15rem;
+    font-weight: 100;
+}
+.count-section{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+}
+.left{
+    display: flex;
+    justify-content: left;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 60%;
+}
+.left>mat-card{
+    width: 15rem;
+    height: 16rem;
+    border-radius: 5%;
+    box-shadow: 3px 3px 3px 3px #0000002d;
+    background-color: #fff;
+    color: #000;
+    margin: 2%;
+}
+.left>mat-card>mat-card-content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin: 2%;
+    padding: 2%;
+    height: 100%;
+}
+.left>mat-card>mat-card-content>.icon-section{
+    display: flex;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    align-items: center;
+    border-radius: 50%;
+    background-color: #FFEED9;
+    margin: 5%;
+    font-size: 1.5rem;
+}
+.left>mat-card>mat-card-content>.state{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.25rem;
+    height: 10%;
+}
+.left>mat-card>mat-card-content>.count{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 4rem;
+    font-weight: 500;
+    width: 100%;
+    height: 20%;
+}
+.btn1{
+    background: #FFEED9;
+    border-radius: 5rem;
+    border: none;
+    font-size: 12px;
+    color: #000;
+    font-style: none;
+    cursor: pointer;
+    width: 60%;
+    padding: 0 5%;
+    height: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+    font-weight: 600;
+    text-decoration: none;
+}
+.toggleBtnSection{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    width: 25rem;
+}
+.right{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40%;
+}
+.viewAll-section{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+}
+.chart{
+    display: block;
+    width: 30rem;
+}
+.tableHeading{
+    font-size: 14px;
+}
+.rows{
+    background-color: #E0F4FF;
+    
+}
+.column1,.column2,.column3{
+    color: #000;
+    border: 0.5px solid #0000002d;
+    padding: 1%;
+}
+.column1{
+    width: 25%;
+}
+.column2{
+    width: 50%;
+    text-align: left
+}
+.column3{
+    width: 25%;
+}
+.deadlock-subsection,.cpu-consume-subsection{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+}
+.deadlock-subsection>mat-card{
+    width: 80%;
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #000;
+    background-color: #E0F4FF;
+    margin: 1%;
+}
+.deadlock-section>mat-card>mat-card-content{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+.stateAndIDs{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+.state,.tid,.nid{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    width: 40%;
+    margin: 2%;
+}
+.stackTrace{
+    display: flex;
+    justify-content: left;
+    align-items: flex-start;
+    margin: 2%;
+    flex-direction: column;
+}
+.cpu-consume-subsection>mat-card{
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #000;
+    background-color: #E0F4FF;
+    margin: 1%;
+    font-size: 12px;
+}
+.cpu-consume-subsection>mat-card>mat-card-content{
+    width: 100%;
+    height: fit-content;
+    color: #000;
+    background-color: #E0F4FF;
+    margin: 1%;
+    font-size: 14px;
+}
+.mapping-section{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 90%;
+}
+.deadlock-svg{
+    width: 100%;
+    height: 100%;
+}
+@media screen and (max-width: 767px) {
+    .container {
+      align-items: center;
+    }
+  
+    .heading {
+      font-size: 2rem;
+    }
+  
+    .thread-counts,
+    .daemon-section,
+    .pool-section,
+    .deadlock-section,
+    .garbage-section,
+    .same-stack-trace-section {
+      width: 100%;
+      margin: 3% 0;
+    }
+  
+    .pool-section>table {
+      width: 100%;
+      margin-top: 3%;
+    }
+  
+    .header,
+    .count-section,
+    .left,
+    .left>mat-card,
+    .btn1,
+    .toggleBtnSection,
+    .right,
+    .viewAll-section,
+    .chart,
+    .tableHeading,
+    .column1,
+    .column2,
+    .column3,
+    .deadlock-subsection,
+    .deadlock-subsection>mat-card,
+    .stateAndIDs,
+    .state,
+    .tid,
+    .nid,
+    .stackTrace,
+    .cpu-consume-subsection>mat-card,
+    .mapping-section,
+    .deadlock-svg {
+      width: 100%;
+    }
+  }
+  
+  @media screen and (min-width: 768px) and (max-width: 1023px) {
+    .heading {
+      font-size: 2.5rem;
+    }
+  }
+  
+  @media screen and (min-width: 1024px) and (max-width: 1439px) {
+  }
+  
+  @media screen and (min-width: 1440px) {
+    .heading {
+      font-size: 3rem;
+    }
+  }
+  

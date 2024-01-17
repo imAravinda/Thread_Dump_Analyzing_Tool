@@ -6,6 +6,8 @@ import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public interface ThreadDumpServiceI {
     ThreadDumpAnalyzingResult getAnalyzingResult(MultipartFile file);
@@ -14,13 +16,9 @@ public interface ThreadDumpServiceI {
 
     ThreadDumpAnalyzingResult getThreadsFilterByPackage(String Pkg);
 
-    ThreadDumpAnalyzingResult getThreadsFilterByClass(String className);
+    List<ThreadDump.CommonCategories> getSameStackTraces();
 
-    ThreadDumpAnalyzingResult getThreadsFilterByMethod(String methodName);
-
-    List<String> getThreadsInSameStackTrace();
-
-    List<ThreadDump.CommonPools> getPoolCategories();
+    List<ThreadDump.CommonCategories> getPoolCategories();
 
     ThreadDumpAnalyzingResult getThreadsInSamePool(String pool);
 
@@ -30,7 +28,8 @@ public interface ThreadDumpServiceI {
 
     ThreadDumpAnalyzingResult getHighCPUConsumingThreads();
 
-    ThreadDumpAnalyzingResult getBlockedThreads();
-
     ThreadDumpAnalyzingResult getGarbageThreads();
+
+    Map<String, List<ThreadDump>> getThreadsWithSameWitingResource();
+
 }

@@ -16,18 +16,16 @@ import java.util.stream.Collectors;
 @Service
 public class ThreadDumpService implements ThreadDumpServiceI {
 
-    private String stackTrace;
-    private List<ThreadDump> threadDumps = new ArrayList<>();
+    private Set<ThreadDump> threadDumps = new HashSet<>();
     private ThreadDumpAnalyzingResult threadDumpAnalyzingResult =  new ThreadDumpAnalyzingResult();
 
     @Override
     public ThreadDumpAnalyzingResult getAnalyzingResult(MultipartFile file) {
-        List<ThreadDump> threadDumpsLocal = new ArrayList<>();
-        if (file.isEmpty()) {
-            return null;
+        Set<ThreadDump> threadDumpsLocal = new HashSet<>();
+        String fileName = file.getOriginalFilename();
+        if (fileName != null && !(fileName.endsWith(".txt") || fileName.endsWith(".tdump"))) {
+            throw new IllegalArgumentException("Invalid file type. Please upload a .txt or .tdump file.");
         }
-
-
         try {
             String fileContent = new String(file.getBytes(), StandardCharsets.UTF_8);
             processFileContent(fileContent, threadDumpsLocal);
@@ -41,7 +39,7 @@ public class ThreadDumpService implements ThreadDumpServiceI {
 
     @Override
     public ThreadDumpAnalyzingResult getThredsFilterByState(String state){
-        List<ThreadDump> filteredThreadDumps = new ArrayList<>();
+        Set<ThreadDump> filteredThreadDumps = new HashSet<>();
         ThreadDumpAnalyzingResult threadDumpAnalyzingResult = new ThreadDumpAnalyzingResult();
         for (ThreadDump threadDump : threadDumps) {
             if (threadDump.getState().toLowerCase().equals(state.toLowerCase())) {
@@ -54,7 +52,7 @@ public class ThreadDumpService implements ThreadDumpServiceI {
 
     @Override
     public ThreadDumpAnalyzingResult getThreadsFilterByPackage(String Pkg) {
-        List<ThreadDump> filteredThreadDumps = new ArrayList<>();
+        Set<ThreadDump> filteredThreadDumps = new HashSet<>();
         ThreadDumpAnalyzingResult threadDumpAnalyzingResult = new ThreadDumpAnalyzingResult();
         for (ThreadDump threadDump : threadDumps) {
             if (threadDump.getPackageDetailsAffectedByThread() != null && threadDump.getPackageDetailsAffectedByThread().contains(Pkg)) {
@@ -66,59 +64,15 @@ public class ThreadDumpService implements ThreadDumpServiceI {
     }
 
     @Override
-    public ThreadDumpAnalyzingResult getThreadsFilterByClass(String className) {
-        List<ThreadDump> filteredThreadDumps = new ArrayList<>();
-        ThreadDumpAnalyzingResult threadDumpAnalyzingResult = new ThreadDumpAnalyzingResult();
-        for (ThreadDump threadDump : threadDumps) {
-            if (threadDump.getClassName().equals(className)) {
-                filteredThreadDumps.add(threadDump);
-            }
-        }
-        threadDumpAnalyzingResult.setThreadDumps(filteredThreadDumps);
-        return threadDumpAnalyzingResult;
-    }
-
-    @Override
-    public ThreadDumpAnalyzingResult getThreadsFilterByMethod(String methodName) {
-        List<ThreadDump> filteredThreadDumps = new ArrayList<>();
-        ThreadDumpAnalyzingResult threadDumpAnalyzingResult = new ThreadDumpAnalyzingResult();
-        for (ThreadDump threadDump : threadDumps) {
-            if (threadDump.getClassName().equals(methodName)) {
-                filteredThreadDumps.add(threadDump);
-            }
-        }
-        threadDumpAnalyzingResult.setThreadDumps(filteredThreadDumps);
-        return threadDumpAnalyzingResult;
-    }
-
-    @Override
-    public List<String> getThreadsInSameStackTrace() {
-        List<String> stackTraces = new ArrayList<>();
-        List<String> sameStackTraces = new ArrayList<>();
-        for(ThreadDump threadDump:threadDumps){
-            stackTraces.add(threadDump.getStackTrace());
-        }
-        for(int i=0;i<stackTraces.size();i++){
-            String initialStackTrace = stackTraces.get(i);
-            for(int j=1;j<stackTraces.size();j++){
-                if(initialStackTrace.equals(stackTraces.get(j))){
-                    sameStackTraces.add(stackTraces.get(j));
-                }
-            }
-        }
-        return sameStackTraces;
-    }
-
-    @Override
-    public List<ThreadDump.CommonPools> getPoolCategories() {
+    public List<ThreadDump.CommonCategories> getPoolCategories() {
         List<String> pools = new ArrayList<>();
         for(ThreadDump threadDump:threadDumps){
             String pool = threadDump.getPool().replaceAll("\\d+$","");
             pools.add(pool);
         }
-        ThreadDump.CommonPools commonPools;
+        ThreadDump.CommonCategories commonPools;
         Set<String> uniquePoolNames = new HashSet<>(pools);
-        List<ThreadDump.CommonPools> commonPoolsList = new ArrayList<>();
+        List<ThreadDump.CommonCategories> commonPoolsList = new ArrayList<>();
         for (String poolName : uniquePoolNames) {
             int count = 0;
             for (String pool : pools) {
@@ -128,9 +82,9 @@ public class ThreadDumpService implements ThreadDumpServiceI {
             }
 
             if (count > 1) {
-                commonPools = new ThreadDump.CommonPools();
+                commonPools = new ThreadDump.CommonCategories();
                 commonPools.setPoolName(poolName);
-                commonPools.setCount(count);
+                commonPools.setCount(String.valueOf(count));
                 commonPoolsList.add(commonPools);
             }
         }
@@ -139,7 +93,7 @@ public class ThreadDumpService implements ThreadDumpServiceI {
 
     @Override
     public ThreadDumpAnalyzingResult getThreadsInSamePool(String pool) {
-        List<ThreadDump> dumpsInSamePool = new ArrayList<>();
+        Set<ThreadDump> dumpsInSamePool = new HashSet<>();
         ThreadDumpAnalyzingResult threadDumpAnalyzingResult = new ThreadDumpAnalyzingResult();
         for(ThreadDump threadDump:threadDumps){
             String modifiedPoolName = threadDump.getPool().replaceAll("\\d+$","");
@@ -153,7 +107,7 @@ public class ThreadDumpService implements ThreadDumpServiceI {
 
     @Override
     public ThreadDumpAnalyzingResult getDetailsOfDaemonAndNonDaemonThreads(boolean isDaemon) {
-        List<ThreadDump> Threads = new ArrayList<>();
+        Set<ThreadDump> Threads = new HashSet<>();
         ThreadDumpAnalyzingResult threadDumpAnalyzingResult = new ThreadDumpAnalyzingResult();
         for(ThreadDump threadDump:threadDumps){
             if(threadDump.isDaemon() == isDaemon){
@@ -216,25 +170,28 @@ public class ThreadDumpService implements ThreadDumpServiceI {
     @Override
     public ThreadDumpAnalyzingResult getHighCPUConsumingThreads() {
         ThreadDumpAnalyzingResult threadDumpAnalyzingResult = new ThreadDumpAnalyzingResult();
-        List<ThreadDump> threadDumpList;
-        List<ThreadDump> filteredDumps = new ArrayList<>();
+        Set<ThreadDump> threadDumpList;
+        Set<ThreadDump> filteredDumps = new HashSet<>();
         threadDumpList = getThredsFilterByState("RUNNABLE").getThreadDumps();
         for(ThreadDump threadDump:threadDumpList){
             String stackTrace = threadDump.getStackTrace();
             String regEx;
             if(threadDump.getCpuTime() > 1000){
-                if(stackTrace.contains("Compiling") && stackTrace.contains("java.lang.Thread.State")){
-                    filteredDumps.add(threadDump);
+                if(stackTrace.contains("java.lang.Thread.State")){
+                    if(stackTrace.contains("Compiling") || hasHotspot(stackTrace)){
+                        filteredDumps.add(threadDump);
+                    }
                 }
             }
-            else{
-                if(stackTrace.contains("sun.nio.ch.Net.accept") || stackTrace.contains("sun.nio.ch.Iocp")){
-                    filteredDumps.add(threadDump);
-                }
-                regEx = "\\b" + "Loop" + "\\b";
-                if(extractDetails(stackTrace,regEx) != null){
-                    filteredDumps.add(threadDump);
-                }
+            if(stackTrace.contains("sun.nio.ch.Net.accept") || stackTrace.contains("sun.nio.ch.Iocp")){
+                filteredDumps.add(threadDump);
+            }
+            regEx = "\\b" + "Loop" + "\\b";
+            if(extractDetails(stackTrace,regEx) != null){
+                filteredDumps.add(threadDump);
+            }
+            if(stackTrace.contains("ThreadPoolExecutor")){
+                filteredDumps.add(threadDump);
             }
         }
         threadDumpAnalyzingResult.setThreadDumps(filteredDumps);
@@ -243,22 +200,63 @@ public class ThreadDumpService implements ThreadDumpServiceI {
     }
 
     @Override
-    public ThreadDumpAnalyzingResult getBlockedThreads() {
-        //TODO
-        return null;
-    }
-
-    @Override
     public ThreadDumpAnalyzingResult getGarbageThreads() {
-        List<ThreadDump> garbageDumps = new ArrayList<>();
+        Set<ThreadDump> garbageDumps = new HashSet<>();
         ThreadDumpAnalyzingResult garbageDumpResult = new ThreadDumpAnalyzingResult();
         for(ThreadDump threadDump:threadDumps){
-            if(threadDump.getPool().contains("GC") || threadDump.getPool().contains("G1")){
+            if(threadDump.getPool().contains("GC") || threadDump.getPool().contains("G1 Conc")){
                 garbageDumps.add(threadDump);
             }
         }
         garbageDumpResult.setThreadDumps(garbageDumps);
         return garbageDumpResult;
+    }
+
+    @Override
+    public List<ThreadDump.CommonCategories> getSameStackTraces() {
+        Map<String, List<ThreadDump>> stackTraceMap = new HashMap<>();
+
+        // Populate the map with thread dumps grouped by stack trace
+        for (ThreadDump threadDump : threadDumps) {
+            String stackTrace = threadDump.getStackTrace().replaceAll("<0x[0-9a-fA-F]+>","");
+
+            if (!stackTraceMap.containsKey(stackTrace)) {
+                stackTraceMap.put(stackTrace, new ArrayList<>());
+            }
+
+            stackTraceMap.get(stackTrace).add(threadDump);
+        }
+
+        // Extract common stack traces with counts
+        List<ThreadDump.CommonCategories> commonStackTraceList = new ArrayList<>();
+        for (Map.Entry<String, List<ThreadDump>> entry : stackTraceMap.entrySet()) {
+            String stackTrace = entry.getKey();
+            List<ThreadDump> relatedThreadDumps = entry.getValue();
+
+            if (relatedThreadDumps.size() > 1) {
+                ThreadDump.CommonCategories commonStackTrace = new ThreadDump.CommonCategories();
+                commonStackTrace.setStackTrace(stackTrace);
+                commonStackTrace.setCount(relatedThreadDumps.get(0).getState().toUpperCase() + " - " + relatedThreadDumps.size());
+                commonStackTrace.setRelatedThreadDumps(relatedThreadDumps);
+                commonStackTraceList.add(commonStackTrace);
+            }
+        }
+
+        return commonStackTraceList;
+    }
+
+    @Override
+    public Map<String, List<ThreadDump>> getThreadsWithSameWitingResource() {
+        Map<String, List<ThreadDump>> dumps = new HashMap<>();
+
+        for (ThreadDump threadDump : threadDumps) {
+            if (threadDump.getWaitingResourceId() != null) {
+                String waitingID = threadDump.getWaitingResourceId();
+                dumps.computeIfAbsent(waitingID, k -> new ArrayList<>()).add(threadDump);
+            }
+        }
+
+        return dumps;
     }
 
     private boolean hasCycle(Map<String, Set<String>> graph, String node, Set<String> visited, Set<String> inProgress) {
@@ -279,81 +277,68 @@ public class ThreadDumpService implements ThreadDumpServiceI {
         return false;
     }
 
-    private void processFileContent(String fileContent, List<ThreadDump> threadDumps) {
+    private void processFileContent(String fileContent, Set<ThreadDump> threadDumps) {
         String[] lines = fileContent.split("\\r?\\n");
         boolean inThreadSection = false;
-        List<String> stackTraceLines = new ArrayList<>();
-        Set<String> deadLockDetails = new HashSet<>();
+//        List<String> stackTraceLines = new ArrayList<>();
         StringBuilder currentThreadSection = new StringBuilder();
         for (int i = 0; i < lines.length-1; i++) {
             String line = lines[i];
             String nextLine = lines[i+1];
             if (line.startsWith("\"")) {
                 currentThreadSection = new StringBuilder(line);
-                stackTraceLines.clear();
-                stackTraceLines.add(line);
-                if(nextLine.equals("") || nextLine.startsWith("\"V") || nextLine.startsWith("\"G")){
-                    inThreadSection = true;
-                }
+//                stackTraceLines.clear();
+//                stackTraceLines.add(line);
+
             } else {
                 currentThreadSection.append(line);
-                stackTraceLines.add(line);
+//                stackTraceLines.add(line);
 
-                if(line.trim().equals("Locked ownable synchronizers:")){
+                if( (line.trim().isEmpty() && (nextLine.startsWith("\"") || nextLine.startsWith("JNI")))){
                     inThreadSection = true;
                 }
             }
 
             if (inThreadSection) {
-                if (!stackTraceLines.isEmpty()) {
-                    processStackTrace(stackTraceLines);
-                }
+//                if (!stackTraceLines.isEmpty()) {
+//                    processStackTrace(stackTraceLines);
+//                }
                 inThreadSection = false;
                 ThreadDump threadDump = populateThreadsDetails(currentThreadSection.toString());
                 if (threadDump != null) {
                     threadDumps.add(threadDump);
                 }
             }
-//            if(currentThreadSection.toString().contains("Found one Java-level deadlock")){
-//                Pattern pattern = Pattern.compile("\"([^\"]+)\":[\\s\\S]+?waiting to lock monitor [^\\(]+\\(object ([^,]+), a java\\.lang\\.Object\\),[\\s\\S]+?which is held by \"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
-//                Matcher matcher = pattern.matcher(currentThreadSection.toString());
-//                if(matcher.find()){
-//                    String detail = matcher.group(1) + " Waiting to lock " + matcher.group(2) + " which is held by " + matcher.group(3);
-//                    deadLockDetails.add(detail);
-//                }
-//                deadLockResult.setDeadLockDetails(deadLockDetails);
-//            }
         }
     }
 
-    private String processStackTrace(List<String> stackTraceLines) {
-        String StackTraceLocally = "";
-        for (String stackTraceLine : stackTraceLines) {
-            StackTraceLocally += stackTraceLine;
-        }
-        stackTrace = StackTraceLocally;
-        return stackTrace;
-    }
+//    private String processStackTrace(List<String> stackTraceLines) {
+//        String StackTraceLocally = "";
+//        for (String stackTraceLine : stackTraceLines) {
+//            StackTraceLocally += stackTraceLine;
+//        }
+//        stackTrace = StackTraceLocally;
+//        return stackTrace;
+//    }
 
     private ThreadDump populateThreadsDetails(String line) {
         ThreadDump threadDump = new ThreadDump();
         threadDump.setThreadId(extractTid(line));
         threadDump.setNativeId(extractNid(line));
         threadDump.setState(extractState(line));
-        if(threadDump.getState() != null && (threadDump.getState().equals("BLOCKED") || threadDump.getState().equals("WAITING"))){
-                threadDump.setBlocked(true);
-                threadDump.setLockedResourceId(extractLockedResourceId(line));
+        if(threadDump.getState() != null && (threadDump.getState().equals("BLOCKED") || threadDump.getState().equals("WAITING") || threadDump.getState().equals("TIMED_WAITING"))){
                 threadDump.setWaitingResourceId(extractWaitingOnResourceId(line));
         }
+        threadDump.setLockedResourceId(extractLockedResourceId(line));
         threadDump.setPackageDetailsAffectedByThread(extractPackageDetailsAffectedByThread(line));
         setPackageDetails(threadDump);
-        threadDump.setStackTrace(stackTrace);
+        threadDump.setStackTrace(extractStackTrace(line));
         threadDump.setDaemon(identifyDeamonThreads(line));
         threadDump.setPool(extractPools(line));
         threadDump.setCpuTime(extractCpuTime(line));
         threadDump.setPriority(extractPriority(line));
         threadDump.setElapsedTime(extractElapsedTime(line));
-        if(threadDump.getState().equals("BLOCKED")){
+        if(threadDump.getState() != null && threadDump.getState().equals("BLOCKED")){
             threadDump.setLineNo(extractCausedLinesForBlocking(line));
         }
         return threadDump.getThreadId() != null && threadDump.getState() != null ? threadDump : null; // Return null if no thread ID found
@@ -384,7 +369,7 @@ public class ThreadDumpService implements ThreadDumpServiceI {
             }
         } else {
             // Handle invalid input
-            throw new IllegalArgumentException("Invalid input string: " + line);
+            return null;
         }
     }
 
@@ -396,7 +381,7 @@ public class ThreadDumpService implements ThreadDumpServiceI {
             return extractDetails(line,regEx);
         }
         else if(extractDetails(line,regEx2) != null){
-         return extractDetails(line,regEx2);
+            return extractDetails(line,regEx2);
         }
         else{
             return extractDetails(line,regEx3);
@@ -410,19 +395,27 @@ public class ThreadDumpService implements ThreadDumpServiceI {
 
     private String extractLockedResourceId(String line){
         String regEx = "- locked <(0x[\\da-fA-F]+)>.*";
-        return extractDetails(line,regEx);
+        if(extractDetails(line,regEx) != null){
+            return extractDetails(line,regEx);
+        }else {
+            return null;
+        }
     }
 
     private String extractWaitingOnResourceId(String line){
         String regEx = "- waiting on <(0x[\\da-fA-F]+)>.*";
         String regEx1 = "- waiting to lock <(0x[\\da-fA-F]+)>.*";
+        String regEx2 = "- parking to wait for  <(0x[\\da-fA-F]+)>.*";
         if(extractDetails(line,regEx) != null){
             return extractDetails(line,regEx);
-        }
-        else{
+        } else if (extractDetails(line,regEx1) != null) {
             return extractDetails(line,regEx1);
+        } else{
+            return extractDetails(line,regEx2);
         }
     }
+
+
 
     private String extractPackageDetailsAffectedByThread(String line) {
         String Regex = "at\\s+([^\\s]*+\\s+\\w*)";
@@ -481,7 +474,10 @@ public class ThreadDumpService implements ThreadDumpServiceI {
 
     private int extractPriority(String line){
         String regEx = "prio=([0-9])";
-        int priority = Integer.parseInt(extractDetails(line,regEx));
+        int priority = 0;
+        if(extractDetails(line,regEx) != null){
+            priority = Integer.parseInt(extractDetails(line,regEx));
+        }
         return priority;
     }
 
@@ -505,4 +501,41 @@ public class ThreadDumpService implements ThreadDumpServiceI {
         return null;
     }
 
+    private boolean hasHotspot(String stackTrace) {
+        String[] lines = stackTrace.split("\t");
+        Map<String, List<Integer>> lineOccurrences = new HashMap<>();
+
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            lineOccurrences
+                    .computeIfAbsent(line, k -> new ArrayList<>())
+                    .add(i + 1); // Adding 1 because line numbers usually start from 1
+        }
+
+        return lineOccurrences
+                .entrySet()
+                .stream()
+                .anyMatch(entry -> entry.getValue().size() > 1);
+    }
+
+    private String extractStackTrace(String line){
+        String regEx = "java\\.lang\\.Thread\\.State:.*?\\tat .*";
+        String regEx1 = "java\\.lang\\.Thread\\.State:.*";
+        Pattern pattern = Pattern.compile(regEx + "|" + regEx1);
+        Matcher matcher = pattern.matcher(line);
+
+        if (matcher.find()) {
+            return matcher.group();
+        } else {
+            return "";
+        }
+    }
+
+    public Set<ThreadDump> getThreadDumps() {
+        return threadDumps;
+    }
+
+    public void setThreadDumps(Set<ThreadDump> threadDumps) {
+        this.threadDumps = threadDumps;
+    }
 }

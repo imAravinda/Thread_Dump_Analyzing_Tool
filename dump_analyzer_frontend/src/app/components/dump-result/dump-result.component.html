@@ -1,0 +1,386 @@
+<div class="container">
+  <div class="heading">
+    {{
+      deadLockResult.deadlock
+        ? "Deadlock Occured! 😢"
+        : "All threads are fine 😊"
+    }}
+  </div>
+  <div class="thread-counts" id="count-section">
+    <div class="header">
+      <h1>Thread Count Summary</h1>
+      <h2>Total Threads : {{ totalThreads }}</h2>
+    </div>
+    <div class="count-section">
+      <div class="left">
+        <mat-card>
+          <mat-card-content>
+            <div class="icon-section">
+              <fa-icon [icon]="gear" class="icon"></fa-icon>
+            </div>
+            <div class="count">{{ runnableCount }}</div>
+            <div class="state">RUNNABLE</div>
+            <div class="button-section">
+              <button
+                class="btn"
+                (click)="setThreadDetailsBasedOnState('RUNNABLE','count-section')"
+              >
+                View
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        <mat-card>
+          <mat-card-content>
+            <div class="icon-section">
+              <fa-icon [icon]="clock" class="icon"></fa-icon>
+            </div>
+            <div class="count">{{ timedWaitingCount }}</div>
+            <div class="state">TIMED WAITING</div>
+            <div class="button-section">
+              <button
+                class="btn"
+                (click)="setThreadDetailsBasedOnState('TIMED_WAITING','count-section')"
+              >
+                View
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        <mat-card>
+          <mat-card-content>
+            <div class="icon-section">
+              <fa-icon [icon]="pause" class="icon"></fa-icon>
+            </div>
+            <div class="count">{{ waitingCount }}</div>
+            <div class="state">WAITING</div>
+            <div class="button-section">
+              <button
+                class="btn"
+                (click)="setThreadDetailsBasedOnState('WAITING','count-section')"
+              >
+                View
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        <mat-card *ngIf="blockedCount > 0">
+          <mat-card-content>
+            <div class="icon-section">
+              <fa-icon [icon]="lock" class="icon"></fa-icon>
+            </div>
+            <div class="count">{{ blockedCount }}</div>
+            <div class="state">BLOCKED</div>
+            <div class="button-section">
+              <button
+                class="btn"
+                (click)="setThreadDetailsBasedOnState('BLOCKED','count-section')"
+              >
+                View
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <div class="right">
+        <div class="chart">
+          <canvas id="stateCountChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="viewAll-section">
+      <div class="button-section">
+        <button class="btn" (click)="getThreradDetails('count-section')">View All</button>
+      </div>
+    </div>
+  </div>
+  <div class="pool-section" id="pool-section">
+    <div class="header">
+      <h1>Thread Pools</h1>
+      <h2>Display threads in the same pool</h2>
+    </div>
+    <table mat-table [dataSource]="dataSource" class="table">
+      <!-- Column definitions -->
+      <ng-container matColumnDef="threadPool">
+        <th mat-header-cell *matHeaderCellDef class="tableHeading">
+          Thread Pool
+        </th>
+        <td mat-cell *matCellDef="let element" class="column2">
+          {{ element.poolName }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="count">
+        <th mat-header-cell *matHeaderCellDef class="tableHeading">Count</th>
+        <td
+          mat-cell
+          *matCellDef="let element"
+          class="column1"
+          style="text-align: center"
+        >
+          {{ element.count }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="view">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element" class="column3">
+          <div class="button-section">
+            <button
+              class="btn1"
+              (click)="setThreadDetailsBasedOnPool(element.poolName,'pool-section')"
+            >
+              View
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Row content -->
+      <tr
+        mat-header-row
+        *matHeaderRowDef="['threadPool', 'count', 'view']"
+      ></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: ['threadPool', 'count', 'view']"
+        class="rows"
+      ></tr>
+    </table>
+  </div>
+  <div class="daemon-section" id="deamon-nondeamon-section">
+    <div class="header">
+      <h1>Daemon VS Non-Daemon</h1>
+    </div>
+    <div class="count-section">
+      <div class="left">
+        <mat-card>
+          <mat-card-content>
+            <div class="icon-section">
+              <fa-icon [icon]="daemon" class="icon"></fa-icon>
+            </div>
+            <div class="count">{{ daemonThreads }}</div>
+            <div class="state">DAEMON</div>
+            <div class="button-section">
+              <button
+                class="btn"
+                (click)="setThreadDetailsOfDaemonOrNonDaemonThreads(true,'deamon-nondeamon-section')"
+              >
+                View
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        <mat-card>
+          <mat-card-content>
+            <div class="icon-section">
+              <fa-icon [icon]="happy" class="icon"></fa-icon>
+            </div>
+            <div class="count">{{ nonDaemonThreads }}</div>
+            <div class="state">NON-DAEMON</div>
+            <div class="button-section">
+              <button
+                class="btn"
+                (click)="setThreadDetailsOfDaemonOrNonDaemonThreads(false,'deamon-nondeamon-section')"
+              >
+                View
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <div class="right">
+        <div class="chart">
+          <canvas id="daemonNonDaemonCountChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="deadlock-section" *ngIf="deadLockResult.deadlock" id="deadlock-section">
+    <div class="header">
+      <h1>Deadlock Details</h1>
+    </div>
+    <div class="deadlock-subsection">
+      <mat-card *ngFor="let deadlockDetail of deadLockResult.threadsInCycle">
+        <mat-card-content>
+          <div>
+            <h1>
+              Check ({{ deadlockDetail.lineNo }}) to Find the Reason to Blocking
+            </h1>
+          </div>
+          <div class="stateAndIDs">
+            <div class="state">
+              <h3>State</h3>
+              <p>:</p>
+              <p>{{ deadlockDetail.state }}</p>
+            </div>
+            <div class="tid">
+              <h3>Thread ID</h3>
+              <p>:</p>
+              <p>{{ deadlockDetail.threadId }}</p>
+            </div>
+            <div class="nid">
+              <h3>Native ID</h3>
+              <p>:</p>
+              <p>{{ deadlockDetail.nativeId }}</p>
+            </div>
+            <div class="nid">
+              <h3>Locked Resource ID</h3>
+              <p>:</p>
+              <p>{{ deadlockDetail.lockedResourceId }}</p>
+            </div>
+            <div class="nid">
+              <h3>Waiting Resource ID</h3>
+              <p>:</p>
+              <p>{{ deadlockDetail.waitingResourceId }}</p>
+            </div>
+          </div>
+          <div class="stackTrace">
+            <h3>Stack Trace :</h3>
+            <p>{{ deadlockDetail.stackTrace }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+  <div class="mapping-section"></div>
+  <div
+    class="cpu-consume-section"
+    *ngIf="cpuConsumingThreads.threadDumps.length > 0"
+    id="high-cpu-consuming-section"
+  >
+    <div class="header">
+      <h1>CPU Consuming Threads</h1>
+      <h2>If Application Consuming High CPU Investigate Bellow Threads</h2>
+    </div>
+    <div class="cpu-consume-subsection">
+      <mat-card
+        *ngFor="let cpuConsumingThread of displayData"
+      >
+        <mat-card-content>
+          <div class="stateAndIDs">
+            <div class="state">
+              <h3>State</h3>
+              <p>:</p>
+              <p>{{ cpuConsumingThread.state }}</p>
+            </div>
+            <div class="tid">
+              <h3>Thread ID</h3>
+              <p>:</p>
+              <p>{{ cpuConsumingThread.threadId }}</p>
+            </div>
+            <div class="nid">
+              <h3>Native ID</h3>
+              <p>:</p>
+              <p>{{ cpuConsumingThread.nativeId }}</p>
+            </div>
+            <div
+              class="nid"
+              *ngIf="cpuConsumingThread.lockedResourceId != null"
+            >
+              <h3>Locked Resource ID</h3>
+              <p>:</p>
+              <p>{{ cpuConsumingThread.lockedResourceId }}</p>
+            </div>
+            <div
+              class="nid"
+              *ngIf="cpuConsumingThread.waitingResourceId != null"
+            >
+              <h3>Waiting Resource ID</h3>
+              <p>:</p>
+              <p>{{ cpuConsumingThread.waitingResourceId }}</p>
+            </div>
+          </div>
+          <div class="stackTrace">
+            <h3>Stack Trace :</h3>
+            <p *ngIf="!cpuConsumingThread.showFullStackTrace">
+              {{ cpuConsumingThread.stackTrace | slice : 0 : 400 }}...
+            </p>
+            <p *ngIf="cpuConsumingThread.showFullStackTrace">
+              {{ cpuConsumingThread.stackTrace }}
+            </p>
+            <div class="toggleBtnSection">
+              <button class="btn1" (click)="toggleStackTrace(cpuConsumingThread)">Toggle Stack Trace</button>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      <div class="showMore-section">
+        <p class="showMore" (click)="toggleShowAllRows()">{{ showAll ? 'Show Less <<' : 'Show All >>' }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="same-stack-trace-section" id="identical-stacktrace-section">
+    <div class="header">
+      <h1>Identical Stack Traces </h1>
+      <h2>Analyze to identify threads with identical stack traces</h2>
+    </div>
+    <table mat-table [dataSource]="sameStackTrace" class="table">
+      <!-- Column definitions -->
+      <ng-container matColumnDef="stackTrace">
+        <th mat-header-cell *matHeaderCellDef class="tableHeading">
+          State & Count
+        </th>
+        <td mat-cell *matCellDef="let element" class="column1">
+          <p>{{ element.count }}</p>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="count">
+        <th mat-header-cell *matHeaderCellDef class="tableHeading">Stack Trace</th>
+        <td
+          mat-cell
+          *matCellDef="let element"
+          class="column2"
+        >
+        {{ element.stackTrace | slice : 0 : 200 }}...
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="view">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element" class="column3">
+          <div class="button-section">
+            <button
+              class="btn1"
+              (click)="setThreadDetailsBasedOnStackTrace(element.stackTrace,'identical-stacktrace-section')"
+            >
+              View
+            </button>
+          </div>
+        </td>
+      </ng-container>
+      <tr
+        mat-header-row
+        *matHeaderRowDef="['stackTrace', 'count', 'view']"
+      ></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: ['stackTrace', 'count', 'view']"
+        class="rows"
+      ></tr>
+    </table>
+  </div>
+  <div class="garbage-section" id="garbage-collectors-section">
+    <div class="header">
+      <h1>GC Threads</h1>
+      <h2>Garbage Collection Threads</h2>
+    </div>
+    <div class="count-section">
+      <div class="left">
+        <mat-card>
+          <mat-card-content>
+            <div class="icon-section">
+              <fa-icon [icon]="garbage" class="icon"></fa-icon>
+            </div>
+            <div class="count">
+              {{ garbageCollectionThreads.threadDumps.length }}
+            </div>
+            <div class="state">GC Threads</div>
+            <div class="button-section">
+              <button class="btn" (click)="setGarbageCollectionThreads('garbage-collectors-section')">
+                View
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

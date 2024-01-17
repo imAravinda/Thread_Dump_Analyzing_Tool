@@ -6,22 +6,14 @@ import java.util.Set;
 
 public class ThreadDumpAnalyzingResult {
 
-    private List<ThreadDump> threadDumps;
-    private DeadLockResult deadLockResult;
+    private Set<ThreadDump> threadDumps;
 
-    public DeadLockResult getDeadLockResult() {
-        return deadLockResult;
-    }
 
-    public void setDeadLockResult(DeadLockResult deadLockResult) {
-        this.deadLockResult = deadLockResult;
-    }
-
-    public List<ThreadDump> getThreadDumps() {
+    public Set<ThreadDump> getThreadDumps() {
         return threadDumps;
     }
 
-    public void setThreadDumps(List<ThreadDump> threadDumps) {
+    public void setThreadDumps(Set<ThreadDump> threadDumps) {
         this.threadDumps = threadDumps;
     }
 

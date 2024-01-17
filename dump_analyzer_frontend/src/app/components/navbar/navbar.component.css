@@ -1,0 +1,62 @@
+.navbar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #E0F4FF;
+}
+.new-file-upload-section{
+    display: flex;
+    justify-content: right;
+    align-items: flex-end;
+    width: 15%;
+    color: #000;
+}
+.upload-btn{
+    background-color: #fabc71;
+    width: 100%;
+    height: 2.5rem;
+    text-align: justify;
+    white-space: normal;
+}
+.logo{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    width: 50%;
+}
+.logo>h1{
+    color: #000;
+    font-size: 1.5rem;
+    letter-spacing: 0.5rem;
+}
+
+@media screen and (max-width:1200px) {
+    .upload-btn{
+        font-size: 12px;
+        width: 100%;
+    }
+}
+@media screen and (max-width:1000px) {
+    .upload-btn{
+        font-size: 10px;
+        width: 100%;
+    }
+    .new-file-upload-section{
+        width: 20%;
+    }
+    .logo>img{
+        width: 15rem;
+    }
+}
+@media screen and (max-width:645px) {
+    .logo>img{
+        width: 10rem;
+    }
+    .upload-btn{
+        font-size: 8px;
+        height: 2rem;
+    }
+    .new-file-upload-section{
+        width: 25%;
+    }
+}
