@@ -1,5 +1,6 @@
 package com.dfn.dump_analyzer_backend.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,7 +21,7 @@ public class ThreadDumpAnalyzingResult {
 
     public static class DeadLockResult{
         private  boolean deadlock;
-        private List<ThreadDump> threadsInCycle;
+        private List<ThreadDump> threadsInCycle = new ArrayList<>();
         private Set<String> deadLockDetails;
 
         public boolean isDeadlock() {

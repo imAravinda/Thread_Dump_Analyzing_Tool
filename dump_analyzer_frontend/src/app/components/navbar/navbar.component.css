@@ -24,10 +24,8 @@
     align-items: center;
     width: 50%;
 }
-.logo>h1{
-    color: #000;
-    font-size: 1.5rem;
-    letter-spacing: 0.5rem;
+.logo>img{
+    width: 20rem;
 }
 
 @media screen and (max-width:1200px) {

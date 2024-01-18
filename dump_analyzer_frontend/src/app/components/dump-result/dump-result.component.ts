@@ -29,7 +29,7 @@ export class DumpResultComponent implements OnInit {
     private router: Router,
     private scroll: ScrollService,
     private shareData: ShareDataService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {}
   ngOnInit(): void {
     this.getThreadCountByState();
@@ -282,7 +282,8 @@ export class DumpResultComponent implements OnInit {
   }
 
   drawCircularGraph(circleData: any[]): void {
-    const svg = d3
+    if(this.deadLockResult.deadlock){
+      const svg = d3
       .select('.mapping-section')
       .append('svg')
       .attr('width', 1000)
@@ -364,6 +365,7 @@ export class DumpResultComponent implements OnInit {
       .attr('orient', 'auto')
       .append('path')
       .attr('d', 'M 0 0 L 12 6 L 0 12 Z'); // Path for arrowhead
+    }
   }
 
   toggleShowAllRows() {

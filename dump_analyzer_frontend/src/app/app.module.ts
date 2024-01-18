@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -22,12 +22,17 @@ import {MatIconModule} from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { ScrollToTopComponent } from './components/scroll-to-top/scroll-to-top.component';
 import { ToastrModule } from 'ngx-toastr';
+import { PageRefreshService } from './services/page_refresh_service/page-refresh.service';
 
 const appRoute : Routes = [
   {path:'', component:HomeComponent},
   {path:'analyzing-result',component:DumpResultComponent},
-  {path:'threads-details',component:DetailsViewerComponent}
+  {path:'threads-details',component:DetailsViewerComponent},
 ]
+export function initApp(appInitService: PageRefreshService) {
+  return () => appInitService.init();
+}
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -57,7 +62,14 @@ const appRoute : Routes = [
     BrowserAnimationsModule,
     ToastrModule.forRoot()
   ],
-  providers: [AnayzeResultCacheService],
+  providers: [AnayzeResultCacheService,
+    PageRefreshService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initApp,
+      deps: [PageRefreshService],
+      multi: true,
+    },],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -280,19 +280,15 @@ public class ThreadDumpService implements ThreadDumpServiceI {
     private void processFileContent(String fileContent, Set<ThreadDump> threadDumps) {
         String[] lines = fileContent.split("\\r?\\n");
         boolean inThreadSection = false;
-//        List<String> stackTraceLines = new ArrayList<>();
         StringBuilder currentThreadSection = new StringBuilder();
         for (int i = 0; i < lines.length-1; i++) {
             String line = lines[i];
             String nextLine = lines[i+1];
             if (line.startsWith("\"")) {
                 currentThreadSection = new StringBuilder(line);
-//                stackTraceLines.clear();
-//                stackTraceLines.add(line);
 
             } else {
                 currentThreadSection.append(line);
-//                stackTraceLines.add(line);
 
                 if( (line.trim().isEmpty() && (nextLine.startsWith("\"") || nextLine.startsWith("JNI")))){
                     inThreadSection = true;
@@ -300,9 +296,7 @@ public class ThreadDumpService implements ThreadDumpServiceI {
             }
 
             if (inThreadSection) {
-//                if (!stackTraceLines.isEmpty()) {
-//                    processStackTrace(stackTraceLines);
-//                }
+
                 inThreadSection = false;
                 ThreadDump threadDump = populateThreadsDetails(currentThreadSection.toString());
                 if (threadDump != null) {
@@ -312,14 +306,6 @@ public class ThreadDumpService implements ThreadDumpServiceI {
         }
     }
 
-//    private String processStackTrace(List<String> stackTraceLines) {
-//        String StackTraceLocally = "";
-//        for (String stackTraceLine : stackTraceLines) {
-//            StackTraceLocally += stackTraceLine;
-//        }
-//        stackTrace = StackTraceLocally;
-//        return stackTrace;
-//    }
 
     private ThreadDump populateThreadsDetails(String line) {
         ThreadDump threadDump = new ThreadDump();
